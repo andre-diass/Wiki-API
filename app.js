@@ -30,7 +30,7 @@ const Article = mongoose.model("Article" , articleSchema);
 
 
 //routes
-///////////////////////////////requests targetting all articles/////////////////////////////////
+///////////////////////////////requests targeting all articles/////////////////////////////////
 app.route('/articles')
   .get(function(req, res) {
    
@@ -72,18 +72,55 @@ app.route('/articles')
     });
   });
 
-///////////////////////////////requests targetting a specific article/////////////////////////////////
+///////////////////////////////requests targeting a specific article/////////////////////////////////
 
+app.route("/articles/:articleTitle")
 
+.get(function (req,res) {
+    Article.findOne({title:req.params.articleTitle} , (err, foundArticle) => {
+        if(foundArticle) {
+            res.send(foundArticle)
+        }else{res.send("no articles found")}
+        
+    });
+})
 
+.put((req, res) => {
+    Article.findOneAndUpdate(
+      { title: req.params.articleTitle },
+      { title: req.body.title, content: req.body.content },
+      { overwrite: true },
+      (err) => {
+        if (!err) {
+          res.send("Seccessfully updated article.");
+        }
+      }
+    );
+  })
+ .patch((req,res) => {
+    Article.findOneAndUpdate(
+      { title: req.params.articleTitle },
+      { title: req.body.title, content: req.body.content },
+      (err) => {
+        if (!err) {
+          res.send("Seccessfully updated article.");
+        }
+      }
+    );
+    
+ })
+ .delete((req,res) => {
+    Article.deleteOne({title:req.params.articleTitle},(err) =>{
+        if("err") {
+            res.send("deleted item from the database")
+        }else{
+            res.send(err)
+        }
+    }
+        
+    )
+ });
 
-
-
-
-
-
-
-//TODO
 
 app.listen(3000, function() {
   console.log("Server started on port 3000");
